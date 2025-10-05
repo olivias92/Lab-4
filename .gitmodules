@@ -1,0 +1,3 @@
+[submodule "Solitaire-Game-API"]
+	path = Solitaire-Game-API
+	url = https://github.com/chuan-yu/Solitaire-Game-API
