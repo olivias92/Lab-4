@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 class new_user(BaseModel):
     new_user: str
-    email: str
+    email: str | None = None
 
 
 
@@ -27,7 +27,7 @@ class api_model:
 
 
     def new_user(self, new_user):
-        payload = {"new_user":new_user}
+        payload = new_user.model_dump()
         resp = requests.post(f"{self.base_url}/game", json=payload)
         return resp.json
         

@@ -3,7 +3,7 @@
 import requests
 from api_model import api_model, new_user, new_game, make_move
 
-BASE_URL = "http://localhost:8000/_ah/api/solitaire/v1"
+BASE_URL = "http://127.0.0.1:8000"
 
 api = api_model()
 
@@ -11,6 +11,28 @@ print("Console-Line Solitaire\n")
 n = 5
 print("-" * n)
 # Main menu functions
+
+
+
+
+def test_connection():
+    url = "http://localhost:8080/_ah/api/solitaire/1/user"
+    try:
+        response = requests.get(url)
+        print("Status:", response.status_code)
+        print("Response:", response.text)
+        payload = {
+            "user_name": "Alice",
+            "email": "alice@example.com"
+        }
+
+        response = requests.post(f"{url}/user", json=payload)
+        print(response.status_code, response.text)
+    except Exception as e:
+        print("Connection failed:", e)
+
+test_connection()
+
 
 def menu_gen():
     selection = True
