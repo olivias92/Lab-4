@@ -30,5 +30,5 @@ class MakeMoveForm(BaseModel):
     """Form used to submit a make a move request"""
     action: Action = Action.DEAL
     origin: Optional[StackName] = None
-    destination = Optional[StackName] = None
-    card_position = Optional[int] = None
+    destination: Optional[StackName] = None
+    card_position: Optional[int] = None

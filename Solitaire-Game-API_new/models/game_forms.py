@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List
-from card_forms import CardForms
+from .card_forms import CardForms
 
 
 class GameForm(BaseModel):

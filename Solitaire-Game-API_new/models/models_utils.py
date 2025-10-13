@@ -1,4 +1,4 @@
-from card_forms import CardForm, CardForms
+from .card_forms import CardForm, CardForms
 
 
 def card_deck_objects_to_message_field(objects):
@@ -9,30 +9,31 @@ def card_deck_objects_to_message_field(objects):
     decks = []
     for p in objects:
         cards = []
-        if p["cards"] != []:
-            for c in p["cards"]:
-                card = CardForm(suit=c['suit'],
-                                number=c['number'],
-                                color=c['color'],
-                                upturned=c['upturned'])
-                cards.append(card)
+        cards_list = p.get("cards", [])  # ✅ Safe access
+        if "cards" not in p:
+            print("⚠️ Missing 'cards' in object:", p)
+        for c in cards_list:
+            card = CardForm(
+                suit=c.get('suit'),
+                number=c.get('number'),
+                color=c.get('color'),
+                upturned=c.get('upturned')
+            )
+            cards.append(card)
+
         deck = CardForms(cards=cards)
         decks.append(deck)
 
-    if len(decks) == 1:
-        return decks[0]
-    else:
-        return decks
-
+    return decks[0] if len(decks) == 1 else decks
 
 def byteify(input):
     """Convert JSON string to JSON object"""
     if isinstance(input, dict):
         return {byteify(key): byteify(value)
-                for key, value in input.iteritems()}
+                for key, value in input.items()}
     elif isinstance(input, list):
         return [byteify(element) for element in input]
     elif isinstance(input, str):
-        return input.encode('utf-8')
+        return input
     else:
         return input

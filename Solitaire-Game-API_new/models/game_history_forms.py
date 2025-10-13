@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from card_forms import CardForms
+from .card_forms import CardForms
 from typing import List
 
 

@@ -1,5 +1,5 @@
 from google.cloud import ndb
-from score_forms import ScoreForm
+from models.score_forms import ScoreForm
 
 
 class Score(ndb.Model):

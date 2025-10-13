@@ -51,9 +51,9 @@ class Card:
 
         # If the card is downturned, print a solid black square
         if self.upturned:
-            print (colored(suit + str(self.number), color)),
+            print(colored(f"{suit}{self.number}", color))
         else:
-            print (u"\u25FC".encode('utf-8')),
+            print(u"\u25FC".encode('utf-8')),
 
 # A general card stack class which other specific card
 # classes will inherit
