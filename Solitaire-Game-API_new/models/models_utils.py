@@ -1,30 +1,33 @@
 from .card_forms import CardForm, CardForms
-
+import json
 
 def card_deck_objects_to_message_field(objects):
-    """Conver Python card deck objects to MessageField"""
-    if type(objects) is not list:
+    if not isinstance(objects, list):
         objects = [objects]
 
     decks = []
     for p in objects:
+        if isinstance(p, tuple):
+            p = dict([p])
+        elif not isinstance(p, dict):
+            continue
+
         cards = []
-        cards_list = p.get("cards", [])  # ✅ Safe access
-        if "cards" not in p:
-            print("⚠️ Missing 'cards' in object:", p)
-        for c in cards_list:
+        for c in p.get("cards", []):
+            card_data = c.get("py/state", c)
             card = CardForm(
-                suit=c.get('suit'),
-                number=c.get('number'),
-                color=c.get('color'),
-                upturned=c.get('upturned')
+                suit=card_data.get('suit'),
+                number=card_data.get('number'),
+                color=card_data.get('color'),
+                upturned=card_data.get('upturned')
             )
             cards.append(card)
 
-        deck = CardForms(cards=cards)
-        decks.append(deck)
+        decks.append(CardForms(cards=cards))
 
-    return decks[0] if len(decks) == 1 else decks
+    return decks if len(decks) > 1 else decks[0]
+
+
 
 def byteify(input):
     """Convert JSON string to JSON object"""

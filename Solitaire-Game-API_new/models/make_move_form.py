@@ -5,9 +5,9 @@ from typing import Optional
 
 class Action(str, Enum):
     """Enum class for action"""
-    MOVE = 1
-    DEAL = 2
-    SHOW = 3
+    MOVE = "MOVE"
+    DEAL = "DEAL"
+    SHOW = "SHOW"
 
 
 class StackName(str, Enum):

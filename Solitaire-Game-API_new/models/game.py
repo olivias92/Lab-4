@@ -63,14 +63,36 @@ class Game(Base):
         print("foundations:", self.foundations)
         print("deck:", self.deck)
         print("open_deck:", self.open_deck)
+        
+        # Decode JSON strings
+        deck_data = byteify(json.loads(self.deck))
+        open_deck_data = byteify(json.loads(self.open_deck))
+        piles_data = byteify(json.loads(self.piles))
+        foundations_data = byteify(json.loads(self.foundations))
 
+        # Extract card lists from py/state
+        deck_wrapped = [{"cards": deck_data.get("py/state", {}).get("cards", [])}]
+        open_deck_wrapped = [{"cards": open_deck_data.get("py/state", {}).get("cards", [])}]
+        piles_wrapped = [{"cards": pile.get("py/state", {}).get("cards", [])} for pile in piles_data]
+        foundations_wrapped = [{"cards": foundation.get("py/state", {}).get("cards", [])} for foundation in foundations_data]
+
+        # Convert to Pydantic models
+        converted_deck = card_deck_objects_to_message_field(deck_wrapped)
+        converted_open_deck = card_deck_objects_to_message_field(open_deck_wrapped)
+        converted_piles = card_deck_objects_to_message_field(piles_wrapped)
+        converted_foundations = card_deck_objects_to_message_field(foundations_wrapped)
+
+        print("✅ Type of converted_deck:", type(converted_deck))
+        print("✅ Type of converted_open_deck:", type(converted_open_deck))
+
+        # Return GameForm
         return GameForm(
             urlsafe_key=str(self.id),
             moves=self.moves or 0,
             game_over=self.game_over or False,
-            piles=card_deck_objects_to_message_field(byteify(json.loads(self.piles))),
-            foundations=card_deck_objects_to_message_field(byteify(json.loads(self.foundations))),
-            deck=card_deck_objects_to_message_field(byteify(json.loads(self.deck))),
-            open_deck=card_deck_objects_to_message_field(byteify(json.loads(self.open_deck))),
+            deck=[converted_deck],
+            open_deck=[converted_open_deck],
+            piles=converted_piles,
+            foundations=converted_foundations,
             message=message
         )

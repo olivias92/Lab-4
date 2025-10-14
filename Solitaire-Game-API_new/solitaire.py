@@ -22,6 +22,7 @@ class Card:
         self.number = number
         self.color = COLOR[suit]
         self.upturned = upturned
+        
 
     def show(self):
         self.upturned = True
@@ -178,7 +179,7 @@ class OpenDeck(Stack):
 
 class SolitaireGame:
 
-    def __init__(self, piles, foundations, deck, open_deck, game_over):
+    def __init__(self, piles, foundations, deck, open_deck, game_over, moves = 0):
         if piles is None:
             self.piles = []
         else:
@@ -200,7 +201,7 @@ class SolitaireGame:
             self.open_deck = open_deck
 
         self.game_over = game_over
-
+        self.moves = moves
     # Start a new game
     def new_game(self):
         self.deck = Deck()
@@ -252,15 +253,21 @@ class SolitaireGame:
         top_card.show()
         self.open_deck.add(top_card)
         self.deck.remove()
+        
+        self.moves += 1
+        print("DEAL method triggered")
 
     # Make a move. Return True if a move is made
     def move(self, origin, destination, card_position=-1):
+        print(f"Find move() called with origin={origin}, destination={destination}, card_position={card_position}")
+
         if '_' in origin:
             origin_splitted = origin.split('_')
             origin_name = origin_splitted[0]
             origin_no = int(origin_splitted[1])
         else:
             origin_name = origin
+            origin_no = None
 
         if '_' in destination:
             destination_splitted = destination.split('_')
@@ -268,54 +275,69 @@ class SolitaireGame:
             destination_no = int(destination_splitted[1])
         else:
             destination_name = destination
+            destination_no = None
 
         source = None
         target = None
         moved = False
 
-        # determine source stack
+        # Validate source
         if origin_name == 'PILE':
+            if origin_no is None or origin_no >= len(self.piles):
+                raise ValueError(f"Invalid origin pile index: {origin_no}")
             source = self.piles[origin_no]
 
-        if origin_name == 'DECK':
+        elif origin_name == 'DECK':
             source = self.open_deck
 
-        # determine cards to be moved
+        else:
+            raise ValueError(f"Unknown origin type: {origin_name}")
+
+        if source is None:
+            raise ValueError(f"Could not resolve source from origin: {origin}")
+
+        # Validate card position
         if abs(int(card_position)) > len(source.cards):
             raise Exception("Card Position is out of range")
 
-        if origin_name == 'PILE' and \
-           destination_name == 'PILE':
+        # Determine cards to move
+        if origin_name == 'PILE' and destination_name == 'PILE':
             cards = source.cards[int(card_position):]
         else:
             cards = [source.cards[-1]]
 
-        # If the top card of the cards to be moved are downturned,
-        # abort
-        if cards[0].upturned == False:
-            print ("Cannot move downturned cards")
+        # Prevent moving downturned cards
+        if not cards[0].upturned:
+            print("Cannot move downturned cards")
             return
 
-        # determine target stack
+        # Validate target
         if destination_name == 'PILE':
+            if destination_no is None or destination_no >= len(self.piles):
+                raise ValueError(f"Invalid destination pile index: {destination_no}")
             target = self.piles[destination_no]
 
-        if destination_name == 'FOUNDATION':
+        elif destination_name == 'FOUNDATION':
+            if destination_no is None or destination_no >= len(self.foundations):
+                raise ValueError(f"Invalid foundation index: {destination_no}")
             target = self.foundations[destination_no]
 
-        # make the move
+        else:
+            raise ValueError(f"Unknown destination type: {destination_name}")
+
+        if target is None:
+            raise ValueError(f"Could not resolve target from destination: {destination}")
+
+        # Make the move
         if target.addable(cards):
             target.add(cards)
-
             for _ in range(len(cards)):
                 source.remove()
-
             moved = True
 
-        # Check if the game is over after the move
         self.game_over = self.check_win()
-
         return moved
+
 
     # Show the top card of a pile. Return True if showed
     def show_top(self, pile):
