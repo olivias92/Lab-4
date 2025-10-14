@@ -197,6 +197,9 @@ def make_move(urlsafe_game_key: str, request: MakeMoveForm, db: Session = Depend
     elif action == Action.MOVE:
         if not origin or not destination:
             raise HTTPException(status_code=400, detail="Origin and destination required")
+        
+        origin = origin.name
+        destination = destination.name
         changed = game.move(origin=str(origin), destination=str(destination),
                             card_position=card_position)
         if not changed:
@@ -211,7 +214,7 @@ def make_move(urlsafe_game_key: str, request: MakeMoveForm, db: Session = Depend
     elif action == Action.SHOW:
         if not origin:
             raise HTTPException(status_code=400, detail="Origin required for SHOW action")
-        changed = game.show_top(str(origin))
+        changed = game.show_top(origin.name)
         if not changed:
             raise HTTPException(status_code=400, detail="Could not show card")
 

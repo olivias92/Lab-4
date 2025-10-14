@@ -4,6 +4,12 @@ import requests
 from api_model import api_model, new_user, new_game, make_move
 
 
+#from Solitaire-Game-API_new.models.make_move_form import StackName
+from Solitaire_Game_API_new.models.make_move_form import StackName
+
+#rom models.make_move_form import StackName
+
+
 BASE_URL = "http://127.0.0.1:8000"
 
 api = api_model()
@@ -233,6 +239,7 @@ def game_loop(game_info, current_user):
             
         elif action == "move":
             print("Move!")
+            
             og_pile = input("From what pile would you like to move? ")
             dest_pile = input("Where would you like to put the card? ")
             card_post = input("Please enter a card position (Type -1 to move only one card): ")
@@ -240,13 +247,25 @@ def game_loop(game_info, current_user):
             print("card_post type:", type(card_post))
 
 
+        
+                
+            
+            #origin = StackName[og_pile]
+            destination = StackName[dest_pile]
+            try:
+                origin = StackName[og_pile.strip().upper()]
+            except KeyError:
+                print(f"Invalid pile name: {og_pile}")
+                return
+            destination = StackName[dest_pile]
+
             try:
                 response = requests.put(
                 f"{BASE_URL}/game/{game_info['urlsafe_key']}",
                 json={
                     "action": "MOVE",
-                    "origin": og_pile,
-                    "destination": dest_pile,
+                    "origin": origin.value,
+                    "destination": destination.value,
                     "card_position": card_post
                 })
             
@@ -256,18 +275,16 @@ def game_loop(game_info, current_user):
             except requests.exceptions.RequestException as e:
                 print("Move failed:", e)
                 
-            #requests.post(f"{BASE_URL}/game/{game_info['urlsafe_key']}/move")
-            #response = requests.get(f"{BASE_URL}/game/{game_info['urlsafe_key']}")
-            #game_info = response.json()
-            
         elif action == "show":
-            og_pile_show = input("Enter pile number to show card(PILE_1, PILE_2): ")
+            og_pile_show = input("Enter pile number to show card(PILE_1, PILE_2): ").strip().upper()
+            
+            origin_show = StackName[og_pile_show]
             try:
                 response = requests.put(
                 f"{BASE_URL}/game/{game_info['urlsafe_key']}",
                 json={
                     "action": "SHOW",
-                    "origin": og_pile_show,
+                    "origin": origin_show.value,
                     "destination": None,
                     "card_position": None
                 })
@@ -288,3 +305,54 @@ def game_loop(game_info, current_user):
 
 
 menu_gen()
+
+"""
+
+ elif action == "move":
+            print("Move!")
+            stack_map = {
+                "DECK": 1,
+                "FOUNDATION_0": 2,
+                "FOUNDATION_1": 3,
+                "FOUNDATION_2": 4,
+                "FOUNDATION_3": 5,
+                "PILE_0": 6,
+                "PILE_1": 7,
+                "PILE_2": 8,
+                "PILE_3": 9,
+                "PILE_4": 10,
+                "PILE_5": 11,
+                "PILE_6": 12
+            }
+
+            og_pile = input("From what pile would you like to move? ")
+            dest_pile = input("Where would you like to put the card? ")
+            card_post = input("Please enter a card position (Type -1 to move only one card): ")
+            card_post = int(card_post) if card_post else -1
+            print("card_post type:", type(card_post))
+
+            origin = stack_map.get(og_pile)
+            destination = stack_map.get(dest_pile)
+            
+
+            try:
+                response = requests.put(
+                f"{BASE_URL}/game/{game_info['urlsafe_key']}",
+                json={
+                    "action": "MOVE",
+                    "origin": str(origin),
+                    "destination": str(destination),
+                    "card_position": card_post
+                })
+            
+                response.raise_for_status()
+                game_info = requests.get(f"{BASE_URL}/game/{game_info['urlsafe_key']}").json()
+                
+            except requests.exceptions.RequestException as e:
+                print("Move failed:", e)
+                
+            #requests.post(f"{BASE_URL}/game/{game_info['urlsafe_key']}/move")
+            #response = requests.get(f"{BASE_URL}/game/{game_info['urlsafe_key']}")
+            #game_info = response.json()
+
+"""

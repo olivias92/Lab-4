@@ -19,7 +19,7 @@ class StackName(str, Enum):
     FOUNDATION_3 = 5
     PILE_0 = 6
     PILE_1 = 7
-    PILE_2 = 8
+    PILE_2 = 8 
     PILE_3 = 9
     PILE_4 = 10
     PILE_5 = 11

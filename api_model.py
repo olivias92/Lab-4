@@ -31,6 +31,10 @@ class api_model:
         resp = requests.post(f"{self.base_url}/game", json=payload)
         return resp.json
         
+    
+    def get_stack():
+        print()
+        
         
         
     def new_game(current_user):
