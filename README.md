@@ -11,6 +11,9 @@ To run the application, you must run the API locally by running fastapi_app.py i
 	- Run the command: python fastapi_app.py
 	- After running, you should see INFO lines showing up
 
+Note that the application includes continue game and score view. This is NOT ready yet but the base game is funcational.
+
+
 After starting the server locally, you can run the main application
 To do this:
 	- Open a prompt in the Lab 4 folder
