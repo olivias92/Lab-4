@@ -6,6 +6,9 @@ I do NOT own the original Solitaire API and do not take credit for it. You can f
 
 I took this API and converted it to Pydantic Base Models and SQLAlchmey/SQLite models. You can compare the two as the original is included in the repo.
 
+
+By no means did I expect this to be so involved, even after researching it. But too late now. It works mostly now, please don't rage over how this is all structured. Please email me if there's any questions.
+
 To run the application, you must run the API locally by running fastapi_app.py in a terminal located in the Solitaire_Game_API_new folder
 
 	- Run the command: python fastapi_app.py
