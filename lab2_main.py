@@ -56,10 +56,10 @@ def menu_gen():
             new_game_user()
         elif selection == "3":
             print("\nYou chose continue game!")
-
+            print("\tContinue game is not availiable at this time.\t")
         elif selection == "4":
             print("n\nYou chose view scores!")
-
+            print("\tScore view is not available at this time.\t")
         elif selection == "5":
             print("")
             break
@@ -110,7 +110,7 @@ def new_game_user():
         print("Game data is missing. Cannot start game")
         return
     else:
-        print(f"Game data received:", game_data)
+        print(f"Game data received.\t") #game_data
     game_loop(game_data, current_user)
 
 
@@ -218,7 +218,17 @@ def game_loop(game_info, current_user):
     print()
     while True:
         game_render_full(game_info, current_user)
-        action = input("Enter an action to perform (Move/Draw/Show/Cancel): ").strip().lower()
+        
+        while True:
+            try:
+                action = input("Enter an action to perform (Move/Draw/Show/Cancel): ").strip().lower()
+                break
+            except(ValueError):
+                print("Invalid action passed. Please enter a valid action.\t")
+    
+       
+        
+        # Elif and logic for draw action
         if action == "draw":
             try:
                 response = requests.put(
@@ -236,28 +246,49 @@ def game_loop(game_info, current_user):
             except requests.exceptions.RequestException as e:
                 print("Draw failed:", e)
 
-            
+        
+        # Elif and logic for move action
         elif action == "move":
             print("Move!")
             
-            og_pile = input("From what pile would you like to move? ")
-            dest_pile = input("Where would you like to put the card? ")
-            card_post = input("Please enter a card position (Type -1 to move only one card): ")
-            card_post = int(card_post) if card_post else -1
-            print("card_post type:", type(card_post))
-
-
-        
-                
-            
-            #origin = StackName[og_pile]
-            destination = StackName[dest_pile]
-            try:
-                origin = StackName[og_pile.strip().upper()]
-            except KeyError:
-                print(f"Invalid pile name: {og_pile}")
-                return
-            destination = StackName[dest_pile]
+            # Error handling for all the prompts
+            while True:
+                try:
+                    og_pile = input("From what pile would you like to move? ") 
+                    if og_pile in StackName.__members__:
+                        origin = StackName[og_pile.strip().upper()]
+                        break
+                    else:
+                        raise ValueError                       
+               
+                except(ValueError):
+                    print("Please enter a valid value.")
+                    
+                    
+            # Destination pile
+            while True:
+                try:
+                    dest_pile = input("Where would you like to put the card? ")
+                    if dest_pile in StackName.__members__:
+                        destination = StackName[dest_pile]
+                        break
+                    else:
+                        raise ValueError
+                except(ValueError):
+                    print("Please enter a valid value.")
+                    
+            # Card position 
+            while True:
+                try:
+                    card_post = input("Please enter a card position (Type -1 to move only one card): ")
+                    break
+                except(ValueError):
+                    print("Please enter a valid value.")
+                    
+                    
+            card_post = int(card_post) if card_post else -1     # Defaults to -1
+            #print("card_post type:", type(card_post))
+            #destination = StackName[dest_pile]
 
             try:
                 response = requests.put(
@@ -275,8 +306,26 @@ def game_loop(game_info, current_user):
             except requests.exceptions.RequestException as e:
                 print("Move failed:", e)
                 
+                
+                
+         # Elif and logic for show action
         elif action == "show":
-            og_pile_show = input("Enter pile number to show card(PILE_1, PILE_2): ").strip().upper()
+            
+            
+            while True:
+                try:
+                    og_pile_show = input("Enter pile number to show card(PILE_1, PILE_2): ").strip().upper()
+                    if og_pile_show in StackName.__members__:
+                        origin = StackName[og_pile.strip().upper()]
+                        break
+                    else:
+                        raise ValueError                       
+               
+                except(ValueError):
+                    print("Please enter a valid value.")
+                    
+                    
+          
             
             origin_show = StackName[og_pile_show]
             try:

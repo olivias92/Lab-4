@@ -1,6 +1,8 @@
 import requests
 from pydantic import BaseModel
 
+# To be so real I did not even use this as I planned because I got so off the rails. But it's okay
+
 
 class new_user(BaseModel):
     new_user: str

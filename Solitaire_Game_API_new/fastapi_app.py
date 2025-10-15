@@ -191,8 +191,8 @@ def make_move(urlsafe_game_key: str, request: MakeMoveForm, db: Session = Depend
     if action == Action.DEAL:
         game.deal()
         changed = True
-        game_db.moves = game.moves
         game_db.moves += 1
+        game_db.moves = game.moves
 
     elif action == Action.MOVE:
         if not origin or not destination:
@@ -204,20 +204,22 @@ def make_move(urlsafe_game_key: str, request: MakeMoveForm, db: Session = Depend
                             card_position=card_position)
         if not changed:
             raise HTTPException(status_code=400, detail="Illegal move")
-        print("Incoming request:")
-        print("Action:", request.action)
-        print("Origin:", request.origin)
-        print("Destination:", request.destination)
-        print("Card position:", request.card_position)
-
+        if changed:
+            game_db.moves += 1
+            game_db.moves = game.moves
 
     elif action == Action.SHOW:
         if not origin:
             raise HTTPException(status_code=400, detail="Origin required for SHOW action")
         changed = game.show_top(origin.name)
+        game_db.moves += 1
+        game_db.moves = game.moves
         if not changed:
             raise HTTPException(status_code=400, detail="Could not show card")
-
+        if changed:
+            game_db.moves += 1
+            game_db.moves = game.moves
+            
     # Save updates
     if changed:
         game_json = to_json(game)
@@ -226,7 +228,6 @@ def make_move(urlsafe_game_key: str, request: MakeMoveForm, db: Session = Depend
         game_db.deck = game_json['deck']
         game_db.open_deck = game_json['open_deck']
         game_db.game_over = game_json['game_over']
-        #game_db.put()
         db.commit()
 
         GameHistory.new_history(

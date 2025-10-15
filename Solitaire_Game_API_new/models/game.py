@@ -19,7 +19,7 @@ class Game(Base):
     moves = Column(Integer, nullable=False, default=0)
     game_over = Column(Boolean, nullable=False, default=False)
 
-    # Store JSON as TEXT (string), similar to NDB.JsonProperty
+    # Store JSON as text
     piles = Column(Text, nullable=True)
     foundations = Column(Text, nullable=True)
     deck = Column(Text, nullable=True)
@@ -27,8 +27,6 @@ class Game(Base):
     
     history = relationship("GameHistory", back_populates="game", cascade="all, delete")
 
-
-    #user = relationship("User", back_populates="games")  # If you have this
 
 
     @classmethod
