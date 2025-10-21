@@ -80,8 +80,8 @@ class Game(Base):
         converted_piles = card_deck_objects_to_message_field(piles_wrapped)
         converted_foundations = card_deck_objects_to_message_field(foundations_wrapped)
 
-        print("✅ Type of converted_deck:", type(converted_deck))
-        print("✅ Type of converted_open_deck:", type(converted_open_deck))
+        print("Type of converted_deck:", type(converted_deck))
+        print("Type of converted_open_deck:", type(converted_open_deck))
 
         # Return GameForm
         return GameForm(

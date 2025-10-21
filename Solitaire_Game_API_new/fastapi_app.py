@@ -181,6 +181,8 @@ def make_move(urlsafe_game_key: str, request: MakeMoveForm, db: Session = Depend
     game = to_python(game_db.piles, game_db.foundations, game_db.deck,
                     game_db.open_deck, game_db.game_over)
 
+    game.moves = game_db.moves
+    
     action = request.action
     origin = request.origin
     destination = request.destination
@@ -191,8 +193,10 @@ def make_move(urlsafe_game_key: str, request: MakeMoveForm, db: Session = Depend
     if action == Action.DEAL:
         game.deal()
         changed = True
-        game_db.moves += 1
+        print(f"[DEBUG] After deal: game.moves = {game.moves}")
+
         game_db.moves = game.moves
+        db.commit()
 
     elif action == Action.MOVE:
         if not origin or not destination:
@@ -204,22 +208,20 @@ def make_move(urlsafe_game_key: str, request: MakeMoveForm, db: Session = Depend
                             card_position=card_position)
         if not changed:
             raise HTTPException(status_code=400, detail="Illegal move")
-        if changed:
-            game_db.moves += 1
-            game_db.moves = game.moves
-
+        
+        game_db.moves = game.moves
+        db.commit()
+        
     elif action == Action.SHOW:
         if not origin:
             raise HTTPException(status_code=400, detail="Origin required for SHOW action")
         changed = game.show_top(origin.name)
-        game_db.moves += 1
-        game_db.moves = game.moves
+        
         if not changed:
             raise HTTPException(status_code=400, detail="Could not show card")
-        if changed:
-            game_db.moves += 1
-            game_db.moves = game.moves
-            
+        
+        game_db.moves = game.moves
+        db.commit()
     # Save updates
     if changed:
         game_json = to_json(game)

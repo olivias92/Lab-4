@@ -23,6 +23,7 @@ print("-" * n)
 
 
 def test_connection():
+    # Default connection
     url = "http://localhost:8080/_ah/api/solitaire/1/user"
     try:
         response = requests.get({BASE_URL})
@@ -46,7 +47,7 @@ def menu_gen():
     while True:
         # Menu options text
         print(f"\nPlease select a menu item to continue or press 5 to exit\n")
-        print("1 ---- Add a New User\n2 ---- New Game\n3 ---- Continue Game\n4 ---- View Scores\n5 ---- Exit Program\n")
+        print("1 ---- Add a New User\n2 ---- New Game\n3 ---- Continue Game\n4 ---- View Scores\nE ---- Exit Program\n")
         selection = input("Selection: ")
         if selection == "1":
             print("\nYou chose new user!")
@@ -54,25 +55,31 @@ def menu_gen():
         elif selection == "2":
             print("\nYou chose new game!")
             new_game_user()
+        elif selection == "E":
+            print("")
+            break
+        
+        # Not ready yet
+        """
         elif selection == "3":
             print("\nYou chose continue game!")
             print("\tContinue game is not availiable at this time.\t")
         elif selection == "4":
             print("n\nYou chose view scores!")
             print("\tScore view is not available at this time.\t")
-        elif selection == "5":
-            print("")
-            break
+        """            
+
 
 
 
 
 def new_user_inter():
     
+    # Email just won't exist. Isn't needed
     new_username = input("Plaese enter a username: ")
     email = None
     
-    # new_user_info = new_user(new_user=new_username, email = email)
+
     payload = {"user_name": new_username, "email": email}
     response = requests.post(f"{BASE_URL}/user", json=payload)
     
@@ -171,7 +178,7 @@ def foundation_render(foundations):
 def pile_render(piles):
     max_height = max((len(pile["cards"]) for pile in piles), default=0)
     print("\nPiles:\n")
-    print("\t" + "\t".join(f"[{i+1}]" for i in range(len(piles))))
+    print("\t" + "\t".join(f"[{i}]" for i in range(len(piles))))
 
     for row in range(max_height):
         line = ""
@@ -248,13 +255,11 @@ def game_loop(game_info, current_user):
 
         
         # Elif and logic for move action
-        elif action == "move":
-            print("Move!")
-            
+        elif action == "move":            
             # Error handling for all the prompts
             while True:
                 try:
-                    og_pile = input("From what pile would you like to move? ") 
+                    og_pile = input("From what pile would you like to move (PILE_#)? ") 
                     if og_pile in StackName.__members__:
                         origin = StackName[og_pile.strip().upper()]
                         break
@@ -268,7 +273,7 @@ def game_loop(game_info, current_user):
             # Destination pile
             while True:
                 try:
-                    dest_pile = input("Where would you like to put the card? ")
+                    dest_pile = input("Where would you like to put the card (PILE_#, FOUNDATION_#)? ")
                     if dest_pile in StackName.__members__:
                         destination = StackName[dest_pile]
                         break
@@ -285,10 +290,9 @@ def game_loop(game_info, current_user):
                 except(ValueError):
                     print("Please enter a valid value.")
                     
-                    
-            card_post = int(card_post) if card_post else -1     # Defaults to -1
-            #print("card_post type:", type(card_post))
-            #destination = StackName[dest_pile]
+                
+            # Defaults to -1, or one card position
+            card_post = int(card_post) if card_post else -1     
 
             try:
                 response = requests.put(
@@ -314,7 +318,7 @@ def game_loop(game_info, current_user):
             
             while True:
                 try:
-                    og_pile_show = input("Enter pile number to show card(PILE_1, PILE_2): ").strip().upper()
+                    og_pile_show = input("Enter pile number to show card (PILE_#): ").strip().upper()
                     if og_pile_show in StackName.__members__:
                         origin = StackName[og_pile.strip().upper()]
                         break
@@ -343,65 +347,12 @@ def game_loop(game_info, current_user):
                 
             except requests.exceptions.RequestException as e:
                 print("Show failed:", e)
-                
-            #response = requests.get(f"{BASE_URL}/game/{game_info['urlsafe_key']}")
-            #game_info = response.json()
+
         elif action == "cancel":
             print("Game canceled. Returning to main menu.")
             break
     
 
 
-
+# Main function call
 menu_gen()
-
-"""
-
- elif action == "move":
-            print("Move!")
-            stack_map = {
-                "DECK": 1,
-                "FOUNDATION_0": 2,
-                "FOUNDATION_1": 3,
-                "FOUNDATION_2": 4,
-                "FOUNDATION_3": 5,
-                "PILE_0": 6,
-                "PILE_1": 7,
-                "PILE_2": 8,
-                "PILE_3": 9,
-                "PILE_4": 10,
-                "PILE_5": 11,
-                "PILE_6": 12
-            }
-
-            og_pile = input("From what pile would you like to move? ")
-            dest_pile = input("Where would you like to put the card? ")
-            card_post = input("Please enter a card position (Type -1 to move only one card): ")
-            card_post = int(card_post) if card_post else -1
-            print("card_post type:", type(card_post))
-
-            origin = stack_map.get(og_pile)
-            destination = stack_map.get(dest_pile)
-            
-
-            try:
-                response = requests.put(
-                f"{BASE_URL}/game/{game_info['urlsafe_key']}",
-                json={
-                    "action": "MOVE",
-                    "origin": str(origin),
-                    "destination": str(destination),
-                    "card_position": card_post
-                })
-            
-                response.raise_for_status()
-                game_info = requests.get(f"{BASE_URL}/game/{game_info['urlsafe_key']}").json()
-                
-            except requests.exceptions.RequestException as e:
-                print("Move failed:", e)
-                
-            #requests.post(f"{BASE_URL}/game/{game_info['urlsafe_key']}/move")
-            #response = requests.get(f"{BASE_URL}/game/{game_info['urlsafe_key']}")
-            #game_info = response.json()
-
-"""

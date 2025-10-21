@@ -213,9 +213,7 @@ class SolitaireGame:
         # Create an empty open deck
         self.open_deck = OpenDeck()
 
-        # Fill the piles. The first pile gets 1 card,
-        # the second gets 2 cards, the third 3 cards,
-        # so on and so forth
+        # Fill the piles
         for i in range(0, NPILES):
             self.piles.append(Pile())
 
@@ -256,6 +254,7 @@ class SolitaireGame:
         
         self.moves += 1
         print("DEAL method triggered")
+        return True
 
     # Make a move. Return True if a move is made
     def move(self, origin, destination, card_position=-1):
@@ -334,7 +333,7 @@ class SolitaireGame:
             for _ in range(len(cards)):
                 source.remove()
             moved = True
-
+        self.moves += 1
         self.game_over = self.check_win()
         return moved
 
@@ -353,7 +352,7 @@ class SolitaireGame:
         if not self.piles[pile_no].top_card_upturned():
             self.piles[pile_no].show_top_card()
             showed = True
-
+        self.moves += 1
         return showed
 
     # check whether the user has won the game
