@@ -47,7 +47,7 @@ def menu_gen():
     while True:
         # Menu options text
         print(f"\nPlease select a menu item to continue or press 5 to exit\n")
-        print("1 ---- Add a New User\n2 ---- New Game\n3 ---- Continue Game\n4 ---- View Scores\nE ---- Exit Program\n")
+        print("1 ---- Add a New User\n2 ---- New Game\n5 ---- Exit Program\n")
         selection = input("Selection: ")
         if selection == "1":
             print("\nYou chose new user!")
@@ -55,7 +55,7 @@ def menu_gen():
         elif selection == "2":
             print("\nYou chose new game!")
             new_game_user()
-        elif selection == "E":
+        elif selection == "5":
             print("")
             break
         
